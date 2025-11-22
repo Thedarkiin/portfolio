@@ -413,53 +413,52 @@
             `
         };
 
+        // --- AUDIO ENGINE (MP3 Player Version) ---
         class AudioEngine {
             constructor() {
                 this.ctx = null;
                 this.gainNode = null;
+                this.audioElement = null;
                 this.isMuted = true;
             }
+
             init() {
                 if(this.ctx) return;
+                
+                // 1. Create the Audio Context
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 this.ctx = new AudioContext();
-                this.gainNode = this.ctx.createGain();
-                this.gainNode.gain.value = 0.05;
-                this.gainNode.connect(this.ctx.destination);
-                
-                const bufferSize = 4096;
-                const pinkNoise = (function() {
-                    let b0=0, b1=0, b2=0, b3=0, b4=0, b5=0, b6=0;
-                    const node = this.ctx.createScriptProcessor(bufferSize, 1, 1);
-                    node.onaudioprocess = function(e) {
-                        const output = e.outputBuffer.getChannelData(0);
-                        for (let i = 0; i < bufferSize; i++) {
-                            const white = Math.random() * 2 - 1;
-                            b0 = 0.99886 * b0 + white * 0.0555179;
-                            b1 = 0.99332 * b1 + white * 0.0750759;
-                            b2 = 0.96900 * b2 + white * 0.1538520;
-                            b3 = 0.86650 * b3 + white * 0.3104856;
-                            b4 = 0.55000 * b4 + white * 0.5329522;
-                            b5 = -0.7616 * b5 - white * 0.0168980;
-                            output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
-                            output[i] *= 0.11;
-                            b6 = white * 0.115926;
-                        }
-                    }
-                    return node;
-                }).call(this);
 
-                const filter = this.ctx.createBiquadFilter();
-                filter.type = 'lowpass';
-                filter.frequency.value = 400;
-                pinkNoise.connect(filter);
-                filter.connect(this.gainNode);
+                // 2. Create the Master Volume (Gain)
+                this.gainNode = this.ctx.createGain();
+                this.gainNode.gain.value = 0.05; // Keep volume low and calm
+                this.gainNode.connect(this.ctx.destination);
+
+                // 3. Load the MP3 File
+                this.audioElement = new Audio('music.mp3'); // Make sure your file is named music.mp3
+                this.audioElement.loop = true; // Loop forever
+                this.audioElement.crossOrigin = "anonymous";
+
+                // 4. Connect HTML Audio to Web Audio API
+                // This allows us to control volume/mute smoothly
+                const track = this.ctx.createMediaElementSource(this.audioElement);
+                track.connect(this.gainNode);
+
+                // 5. Play (Browser requires user interaction first, which happens when you click 'ENTER')
+                this.audioElement.play().catch(e => console.log("Audio wait for interaction"));
             }
+
             toggleMute() {
                 this.isMuted = !this.isMuted;
                 if(this.ctx) {
+                    // Smooth fade in/out
                     const target = this.isMuted ? 0 : 0.05;
-                    this.gainNode.gain.setTargetAtTime(target, this.ctx.currentTime, 0.2);
+                    this.gainNode.gain.setTargetAtTime(target, this.ctx.currentTime, 0.5);
+                    
+                    // Resume context if it was suspended by the browser
+                    if (this.ctx.state === 'suspended') {
+                        this.ctx.resume();
+                    }
                 }
                 return this.isMuted;
             }
