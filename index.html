@@ -762,7 +762,7 @@
                 // 4. --- NEW: ONE PIECE FLAG ---
                 // We load the image you added to the folder
                 const texLoader = new THREE.TextureLoader();
-                const flagTex = texLoader.load('jolly.png'); 
+                const flagTex = texLoader.load('jolly.jpg'); 
                 // Create the flag geometry
                 const flagGeo = new THREE.PlaneGeometry(3, 2);
                 const flagMat = new THREE.MeshStandardMaterial({
@@ -1159,6 +1159,14 @@
                     } else {
                         this.state.whaleState.splashed = false;
                         this.objects.whale.position.y = -30;
+                    }
+                }
+                // Animate Pirate Flag
+                if(this.objects.boat) {
+                    const flag = this.objects.boat.getObjectByName("pirateFlag");
+                    if(flag) {
+                        // Simple wave rotation
+                        flag.rotation.y = (Math.PI/2) + Math.sin(t * 5) * 0.2;
                     }
                 }
 
