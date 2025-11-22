@@ -63,7 +63,10 @@ To run this locally on your machine:
     ```
     *Or use the "Live Server" extension in VS Code.*
 
+## 🏴‍☠️ Song choice
 
+![One Piece](one-piece.png)
+*Inspired by the Grand Line.*
 
 ## 📬 Contact
 
