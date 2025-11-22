@@ -735,6 +735,8 @@
 
             buildBoat: function() {
                 const g = new THREE.Group();
+                
+                // 1. Hull
                 const shape = new THREE.Shape();
                 shape.moveTo(0,0);
                 shape.bezierCurveTo(2,0, 2,8, 0,10); 
@@ -744,19 +746,47 @@
                 const hull = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color:0x4e342e}));
                 g.add(hull);
 
+                // 2. Mast
                 const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.2,10), new THREE.MeshStandardMaterial({color:0x3e2723}));
-                mast.position.set(0, 5, 0); g.add(mast);
+                mast.position.set(0, 5, 0); 
+                g.add(mast);
                 
+                // 3. Sail (White Cloth)
                 const sailShape = new THREE.Shape();
                 sailShape.moveTo(0,0); sailShape.lineTo(0,7); sailShape.lineTo(5,1); sailShape.lineTo(0,0);
                 const sailGeo = new THREE.ExtrudeGeometry(sailShape, {depth:0.1, bevelEnabled:false});
                 const sail = new THREE.Mesh(sailGeo, new THREE.MeshStandardMaterial({color:0xeeeeee, side:2}));
-                sail.position.set(0, 2, 0.2); sail.rotation.y=Math.PI/2; g.add(sail);
+                sail.position.set(0, 2, 0.2); sail.rotation.y=Math.PI/2; 
+                g.add(sail);
 
+                // 4. --- NEW: ONE PIECE FLAG ---
+                // We load the image you added to the folder
+                const texLoader = new THREE.TextureLoader();
+                const flagTex = texLoader.load('jolly.png'); 
+                // Create the flag geometry
+                const flagGeo = new THREE.PlaneGeometry(3, 2);
+                const flagMat = new THREE.MeshStandardMaterial({
+                    map: flagTex, 
+                    transparent: true, 
+                    side: THREE.DoubleSide,
+                    alphaTest: 0.5 // Helps with transparency cutout
+                });
+                const flag = new THREE.Mesh(flagGeo, flagMat);
+                flag.position.set(0, 9.5, 0); // Top of mast
+                flag.rotation.y = Math.PI / 2; // Face sideways
+                flag.name = "pirateFlag"; // Tag it for animation
+                
+                // Add a little pivot so it waves from the pole, not the center
+                flag.geometry.translate(1.5, 0, 0); 
+                g.add(flag);
+                // -----------------------------
+
+                // 5. Cannon
                 const cannon = new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.4,1.5), new THREE.MeshStandardMaterial({color:0x111}));
                 cannon.rotation.x = Math.PI/2; cannon.position.set(0, 2, 4); 
                 this.objects.cannon = cannon; g.add(cannon);
 
+                // 6. Lantern
                 const bl = new THREE.PointLight(0xffaa00, 0, 15); bl.position.set(0, 4, -4); bl.name="boatLight";
                 const lm = new THREE.Mesh(new THREE.DodecahedronGeometry(0.3), new THREE.MeshBasicMaterial({color:0xffd700}));
                 lm.position.set(0, 4, -4); g.add(lm); g.add(bl);
