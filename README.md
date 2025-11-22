@@ -1,5 +1,5 @@
 
-# The Sanctuary 
+# My Interactive portfolio
 
 [**🔴 PLAY LIVE DEMO**](https://thedarkiin.github.io/portfolio/)
 
