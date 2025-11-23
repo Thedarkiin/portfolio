@@ -47,7 +47,7 @@ If you want to build something similar, you don't need to memorize the entire Th
 
 ![One Piece](one-piece.png)
 
-*Inspired by the Grand Line.*
+*Youtube: One Piece The worlds number one Oden store*
 
 ## 📬 Contact
 
