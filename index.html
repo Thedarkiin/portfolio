@@ -83,8 +83,6 @@
             position: absolute; top: 30px; left: 30px; 
             display: flex; gap: 15px; pointer-events: auto; 
         }
-        .control-row { display: flex; gap: 15px; align-items: center; }
-
         .btn-icon {
             width: 44px; height: 44px; border-radius: 8px; background: rgba(5, 10, 15, 0.6);
             border: 1px solid rgba(255,255,255,0.1); color: #8a9bb0; font-size: 1.1rem;
@@ -400,13 +398,11 @@
                 <h2>Yassin Asermouh</h2>
                 <span class="subtitle">DATA SCIENCE STUDENT @ INSEA</span>
                 <br>
-                <p>I am a Data Science student at the <strong>National Institute of Statistics and Applied Economics (INSEA)</strong>. My passion lies at the intersection of **Biological Intelligence (Neuropsychology)** and **Artificial Intelligence**.</p>
-                <p>Unlike a traditional software engineer, I approach problems through data. I specialize in **Machine Learning**, **Quantitative Finance**, and **Data Visualization** using PowerBI.</p>
-                <p><em>Note on this Portfolio:</em> I do not code in JavaScript. This entire 3D interactive world was built using **Prompt Engineering**, demonstrating my ability to leverage Generative AI to create complex systems beyond my native stack.</p>
+                <p>I am a Data Science student at the <strong>National Institute of Statistics and Applied Economics (INSEA)</strong>, driven by a deep curiosity for learning.</p>
+                <p>My academic focus is on Statistical Learning, Deep Learning and Mathematical modeling.</p>
                 
                 <div class="data-grid">
-                    <div class="data-card"><h3>Core Focus</h3><p>Data Science, Neuropsychology, Quantitative Analysis.</p></div>
-                    <div class="data-card"><h3>Goal</h3><p>To apply ML models to financial markets and biological systems.</p></div>
+                    <div class="data-card"><h3>Core interest</h3><p>Neuronal models, Deep Learning, Optimization.</p></div>
                 </div>
             `,
             resume: `
@@ -416,13 +412,13 @@
                 <div style="background: rgba(255,255,255,0.03); padding: 30px; border-radius: 8px; border-left: 3px solid #c5a059; margin-bottom: 30px;">
                     <h3 style="color: #fff; font-family: 'Montserrat'; margin-top: 0;">Education</h3>
                     <p style="margin-bottom: 5px;"><strong>State Engineer Degree (Data Science)</strong> | INSEA</p>
-                    <p style="font-size: 0.9rem; color: #888;">Focus: Statistics, Machine Learning, Financial Mathematics.</p>
+                    <p style="font-size: 0.9rem; color: #888;">Focus: Data Engineering, Machine Learning, Economics.</p>
                 </div>
 
                 <div class="data-grid">
                     <div class="data-card">
                         <h3>Data & ML</h3>
-                        <p>Python, SQL, Scikit-Learn, TensorFlow, Pandas, NumPy.</p>
+                        <p>Python, SQL,Docker, Scikit-Learn, Pytorch, Airflow, Pandas, NumPy.</p>
                     </div>
                     <div class="data-card">
                         <h3>Visualization & AI</h3>
@@ -437,7 +433,7 @@
             contact: `
                 <h2>Contact Me</h2>
                 <span class="subtitle">LET'S CONNECT</span>
-                <p>I am open to opportunities in <strong>Data Science</strong>, <strong>Quantitative Finance</strong>, and <strong>Machine Learning</strong> roles.</p>
+                <p>I am open to opportunities in <strong>Data Science</strong>, <strong>Data&Ai Engineering</strong>, and <strong>Machine Learning</strong> roles.</p>
                 
                 <div style="margin-top:40px; padding:30px; border:1px solid rgba(255, 255, 255, 0.1); border-radius:8px; text-align:center; background: rgba(255,255,255,0.02);">
                     <a href="mailto:asermouyassing@gmail.com" style="color:#c5a059; font-size:1.3rem; text-decoration:none; font-family:'Montserrat', sans-serif; display:block; margin-bottom:10px; font-weight: 700;">asermouyassing@gmail.com</a>
@@ -462,6 +458,7 @@
                 this.ctx = null;
                 this.gainNode = null;
                 this.audioElement = null;
+                this.isMuted = true;
             }
 
             init() {
@@ -553,6 +550,9 @@
                 
                 const slider = document.getElementById('volume-slider');
                 slider.oninput = (e) => this.audio.setVolume(e.target.value);
+                // FIX: Remove focus when mouse is released to prevent arrow keys from changing volume
+                slider.onchange = (e) => e.target.blur();
+                slider.addEventListener('mouseup', function() { this.blur(); });
             },
 
             key: function(e, v) {
@@ -653,27 +653,36 @@
 
             buildIsland: function() {
                 const g = new THREE.Group();
-                const sandGeo = new THREE.RingGeometry(15, 28, 32);
+                // SANDY SHORE RING (FIXED OVERLAP)
+                const sandGeo = new THREE.RingGeometry(15, 28, 32); // Inner rad 15 overlaps rock (20)
                 sandGeo.rotateX(-Math.PI/2);
                 const sandMat = new THREE.MeshStandardMaterial({color:0xe6c288, roughness:1}); 
                 const sand = new THREE.Mesh(sandGeo, sandMat);
-                sand.position.y = 0.2; g.add(sand);
+                sand.position.y = 0.2; 
+                g.add(sand);
+
+                // Rock Base
                 const rockGeo = new THREE.CylinderGeometry(20, 25, 35, 32, 5); 
                 rockGeo.translate(0, 10, 0);
                 const pos = rockGeo.attributes.position;
                 for(let i=0; i<pos.count; i++){
-                    const x = pos.getX(i); const y = pos.getY(i); const z = pos.getZ(i);
+                    const x = pos.getX(i);
+                    const y = pos.getY(i);
+                    const z = pos.getZ(i);
                     if (y < 26) {
                         const noise = Math.sin(x*0.3) * Math.cos(z*0.3) * 2 + Math.sin(y*0.5)*1.5 + (Math.random()-0.5)*1.5;
                         const factor = 1 + (noise * 0.05);
-                        pos.setX(i, x * factor); pos.setZ(i, z * factor);
+                        pos.setX(i, x * factor);
+                        pos.setZ(i, z * factor);
                     }
                 }
                 rockGeo.computeVertexNormals();
                 const rock = new THREE.Mesh(rockGeo, new THREE.MeshStandardMaterial({color:0x2c2c2c, roughness:0.9, flatShading:true}));
                 g.add(rock);
+
                 const plat = new THREE.Mesh(new THREE.CylinderGeometry(21, 20, 4, 9), new THREE.MeshStandardMaterial({color:0x2d4c1e}));
                 plat.position.y = 28; g.add(plat);
+
                 const tower = new THREE.Group(); tower.position.y = 30;
                 const base = new THREE.Mesh(new THREE.CylinderGeometry(6, 7, 15, 8), new THREE.MeshStandardMaterial({color:0x555, flatShading:true}));
                 base.position.y = 7.5; tower.add(base);
@@ -685,40 +694,52 @@
                 win.position.set(0, 10, 6.5); tower.add(win);
                 const twL = new THREE.PointLight(0xffaa00, 1, 40); twL.position.set(0, 10, 8); twL.name='houseLight'; tower.add(twL);
                 g.add(tower);
+
                 const dock = new THREE.Mesh(new THREE.BoxGeometry(8, 1, 30), new THREE.MeshStandardMaterial({color:0x4e342e}));
                 dock.position.set(0, 2, 45); g.add(dock);
-                const npc = new THREE.Group(); npc.position.set(0, 3, 52);
-                // RED VEST
-                npc.add(new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.7, 3), new THREE.MeshStandardMaterial({color:0xff0000})).translateY(1.5));
-                npc.add(new THREE.Mesh(new THREE.DodecahedronGeometry(0.5), new THREE.MeshStandardMaterial({color:0xffe0bd})).translateY(3.2)); // SKIN COLOR HEAD
-                const staff = new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,5), new THREE.MeshStandardMaterial({color:0x5d4037}));
-                staff.position.set(0.8, 2.5, 0.2); npc.add(staff);
+
+                // --- NPC: LUFFY (Stronger Geometry) ---
+                const npc = new THREE.Group(); npc.position.set(0, 3.5, 52);
                 
-                // --- LUFFY'S HAT ---
+                // 1. Shorts (Blue)
+                const shortsGeo = new THREE.CylinderGeometry(0.45, 0.5, 1.2, 8);
+                const shortsMat = new THREE.MeshStandardMaterial({color: 0x0033aa});
+                const shorts = new THREE.Mesh(shortsGeo, shortsMat);
+                shorts.position.y = 0.6;
+                npc.add(shorts);
+
+                // 2. Torso / Red Vest (Broader shoulders)
+                const chestGeo = new THREE.CylinderGeometry(0.65, 0.5, 1.4, 8);
+                const vestMat = new THREE.MeshStandardMaterial({color: 0xff0000});
+                const chest = new THREE.Mesh(chestGeo, vestMat);
+                chest.position.y = 1.9;
+                npc.add(chest);
+
+                // 3. Arms (Skin color)
+                const armGeo = new THREE.CylinderGeometry(0.15, 0.12, 1.4);
+                const skinMat = new THREE.MeshStandardMaterial({color: 0xffe0bd});
+                const lArm = new THREE.Mesh(armGeo, skinMat);
+                lArm.position.set(0.75, 1.8, 0); lArm.rotation.z = -0.2;
+                const rArm = new THREE.Mesh(armGeo, skinMat);
+                rArm.position.set(-0.75, 1.8, 0); rArm.rotation.z = 0.2;
+                npc.add(lArm); npc.add(rArm);
+
+                // 4. Head
+                const head = new THREE.Mesh(new THREE.DodecahedronGeometry(0.55), skinMat);
+                head.position.y = 3.0;
+                npc.add(head);
+                
+                // 5. Hat
                 const hat = new THREE.Group();
-                // Brim
-                const brim = new THREE.Mesh(
-                    new THREE.CylinderGeometry(1.5, 1.5, 0.1, 32),
-                    new THREE.MeshStandardMaterial({color: 0xeebb00}) // Straw yellow
-                );
-                // Top
-                const top = new THREE.Mesh(
-                    new THREE.CylinderGeometry(0.8, 0.8, 1.0, 32),
-                    new THREE.MeshStandardMaterial({color: 0xeebb00})
-                );
+                const brim = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 0.1, 32), new THREE.MeshStandardMaterial({color: 0xeebb00}));
+                const top = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 1.0, 32), new THREE.MeshStandardMaterial({color: 0xeebb00}));
                 top.position.y = 0.5;
-                // Red Band
-                const band = new THREE.Mesh(
-                    new THREE.CylinderGeometry(0.82, 0.82, 0.3, 32),
-                    new THREE.MeshStandardMaterial({color: 0xff0000})
-                );
+                const band = new THREE.Mesh(new THREE.CylinderGeometry(0.82, 0.82, 0.3, 32), new THREE.MeshStandardMaterial({color: 0xff0000}));
                 band.position.y = 0.3;
                 
-                hat.add(brim);
-                hat.add(top);
-                hat.add(band);
-                hat.position.set(0, 3.8, 0); // On top of head
-                hat.rotation.z = -0.2; // Tilted slightly
+                hat.add(brim); hat.add(top); hat.add(band);
+                hat.position.set(0, 3.4, 0); 
+                hat.rotation.z = -0.2; 
                 npc.add(hat);
                 // -------------------
 
@@ -1139,9 +1160,9 @@
 
             runDialog: function(id) {
                 const nodes = {
-                    start: { t: "Yosh! Who are you?", opts:[{l:"I'm a visitor.", n:'who'}, {l:"I want to explore.", n:'open'}] },
+                    start: { t: "Who are you?", opts:[{l:"I'm a visitor.", n:'who'}, {l:"I want to explore the island.", n:'open'}] },
                     who: { t: "I'm Monkey D. Luffy! I'm gonna be King of the Pirates!", opts:[{l:"Cool!", n:'open'}, {l:"See ya.", n:'close'}] },
-                    open: { t: "Shishishi! Go ahead! The adventure is waiting!", act:'enter' },
+                    open: { t: "Shishishi! Go ahead! Explore the island!", act:'enter' },
                     close: { t: "See ya later!", act:'exit' }
                 };
                 const d = nodes[id];
