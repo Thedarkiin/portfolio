@@ -83,6 +83,8 @@
             position: absolute; top: 30px; left: 30px; 
             display: flex; gap: 15px; pointer-events: auto; 
         }
+        .control-row { display: flex; gap: 15px; align-items: center; }
+
         .btn-icon {
             width: 44px; height: 44px; border-radius: 8px; background: rgba(5, 10, 15, 0.6);
             border: 1px solid rgba(255,255,255,0.1); color: #8a9bb0; font-size: 1.1rem;
@@ -91,7 +93,7 @@
         }
         .btn-icon:hover, .btn-icon.active { background: rgba(197, 160, 89, 0.1); color: #ffd700; border-color: #ffd700; }
 
-        /* NEW VOLUME SLIDER */
+        /* VOLUME SLIDER */
         .volume-container {
             display: flex; align-items: center; gap: 10px;
             background: rgba(5, 10, 15, 0.6); padding: 10px 15px; border-radius: 8px;
@@ -106,24 +108,6 @@
             background: #c5a059; cursor: pointer; transition: 0.2s;
         }
         input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); background: #ffd700; }
-
-        /* NEW CAMERA CONTROLS (Bottom Left) */
-        .cam-controls {
-            position: absolute; bottom: 30px; left: 30px;
-            display: flex; gap: 10px; pointer-events: auto;
-        }
-        .cam-btn {
-            padding: 8px 16px; background: rgba(5, 10, 15, 0.6);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;
-            color: #8a9bb0; font-family: 'Montserrat', sans-serif; font-size: 0.75rem;
-            font-weight: 700; cursor: pointer; backdrop-filter: blur(5px);
-            transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
-        }
-        .cam-btn:hover, .cam-btn.active { background: rgba(197, 160, 89, 0.2); color: #ffd700; border-color: #ffd700; }
-        .cam-label {
-            position: absolute; bottom: 75px; left: 30px; 
-            color: rgba(255,255,255,0.4); font-family: 'Montserrat'; font-size: 0.7rem; letter-spacing: 2px;
-        }
 
         /* WEATHER WIDGET */
         #weather-widget {
@@ -469,28 +453,6 @@
                         <p>View Repos ↗</p>
                     </div>
                 </div>
-            `,
-            interests: `
-                <h2>Research Modules</h2>
-                <span class="subtitle">AREAS OF INTEREST</span>
-                <div class="data-grid">
-                    <div class="data-card">
-                        <h3>Neuropsychology</h3>
-                        <p>Studying biological neural networks to understand the foundations of human intelligence and improve AI architectures.</p>
-                    </div>
-                    <div class="data-card">
-                        <h3>Quantitative Finance</h3>
-                        <p>Applying stochastic calculus and ML algorithms to market data for predictive modeling and risk analysis.</p>
-                    </div>
-                    <div class="data-card">
-                        <h3>Data Visualization</h3>
-                        <p>Transforming complex datasets into actionable insights using PowerBI and advanced dashboarding techniques.</p>
-                    </div>
-                    <div class="data-card">
-                        <h3>Generative AI</h3>
-                        <p>Mastering the art of Prompt Engineering to build complex applications (like this 3D site) efficiently.</p>
-                    </div>
-                </div>
             `
         };
 
@@ -532,10 +494,8 @@
         const Game = {
             scene: null, camera: null, renderer: null, controls: null,
             water: null, sky: null, sun: null,
-            // Removed tornado, removed camera-related objects
             objects: { boat: null, npc: null, fireflies: null, birds: null, moon: null, lanterns: null, whale: null, pirateShips: [], hawk: null, supplyCrates: [], explosions: [], lightningBolts: [] },
             lights: { dir: null, amb: null },
-            // Removed tornadoState, removed cameraMode
             state: { night: false, docked: false, talking: false, mapVisible: true, canTalk: false, keys: {w:0,a:0,s:0,d:0}, whaleState: { t: 0, jumping: false }, lightningState: { timer: 0 } },
             physics: { speed: 0, angle: Math.PI, vel: new THREE.Vector3(), accel: 0.015, fric: 0.98, turn: 0.02, max: 0.8 },
             audio: new AudioEngine(),
@@ -545,12 +505,6 @@
                 document.getElementById('sec-about').innerHTML = CONTENT.about;
                 document.getElementById('sec-resume').innerHTML = CONTENT.resume;
                 document.getElementById('sec-contact').innerHTML = CONTENT.contact;
-                // Added Interests tab content injection if you have a container for it in HTML, 
-                // otherwise ensure your HTML has a div id="sec-interests" inside .p-content if you want to show the 4th tab.
-                // Current HTML structure supports 3 tabs: About, Resume, Contact.
-                // I'll stick to the 3 tabs structure you have, merging interests into About or Resume if needed,
-                // BUT based on previous prompts, I will ensure the 'interests' content is used if you add a tab for it.
-                // For now, I've put the Neuro/Quant stuff into the CONTENT object so it's ready.
                 
                 this.renderer = new THREE.WebGLRenderer({ antialias: true });
                 this.renderer.setSize(window.innerWidth, window.innerHeight);
